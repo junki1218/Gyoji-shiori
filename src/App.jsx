@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, Calendar, MapPin, Target, Backpack, Clock, 
-  Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2 
+  Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2, Settings as SettingsIcon 
 } from 'lucide-react';
 import { useShiori } from './context/ShioriContext';
 
@@ -19,9 +19,11 @@ import Page9PocketMoney from './pages/Page9_PocketMoney';
 import Page10Roles from './pages/Page10_Roles';
 import PageCustom from './pages/PageCustom';
 import Preview from './pages/Preview';
+import Settings from './pages/Settings';
 
 function Sidebar() {
-  const { resetData } = useShiori();
+  const { data, resetData } = useShiori();
+  const { useKanji } = data.settings;
   const navigate = useNavigate();
 
   const handleReset = () => {
@@ -30,28 +32,28 @@ function Sidebar() {
   };
 
   const navItems = [
-    { to: "/", icon: <Calendar size={20} />, label: "1. 日時" },
-    { to: "/destination", icon: <MapPin size={20} />, label: "2. 行き先" },
-    { to: "/goals", icon: <Target size={20} />, label: "3. 目標" },
-    { to: "/belongings", icon: <Backpack size={20} />, label: "4. もちもの" },
-    { to: "/schedule", icon: <Clock size={20} />, label: "5. スケジュール" },
-    { to: "/seats", icon: <Bus size={20} />, label: "6. 座席" },
-    { to: "/room", icon: <Home size={20} />, label: "7. 泊まる部屋" },
-    { to: "/memo", icon: <FileText size={20} />, label: "8. メモ" },
-    { to: "/pocket-money", icon: <Wallet size={20} />, label: "9. お小遣い帳" },
-    { to: "/roles", icon: <Users size={20} />, label: "10. かかり" },
-    { to: "/custom/11", icon: <FilePlus size={20} />, label: "11. フリーページ1" },
-    { to: "/custom/12", icon: <FilePlus size={20} />, label: "12. フリーページ2" },
-    { to: "/custom/13", icon: <FilePlus size={20} />, label: "13. フリーページ3" },
-    { to: "/custom/14", icon: <FilePlus size={20} />, label: "14. フリーページ4" },
-    { to: "/custom/15", icon: <FilePlus size={20} />, label: "15. フリーページ5" },
+    { to: "/", icon: <Calendar size={20} />, label: useKanji ? "1. 日時" : "1. にちじ" },
+    { to: "/destination", icon: <MapPin size={20} />, label: useKanji ? "2. 行き先" : "2. いきさき" },
+    { to: "/goals", icon: <Target size={20} />, label: useKanji ? "3. 目標" : "3. もくひょう" },
+    { to: "/belongings", icon: <Backpack size={20} />, label: useKanji ? "4. もちもの" : "4. もちもの" },
+    { to: "/schedule", icon: <Clock size={20} />, label: useKanji ? "5. スケジュール" : "5. スケジュール" },
+    { to: "/seats", icon: <Bus size={20} />, label: useKanji ? "6. 座席" : "6. ざせき" },
+    { to: "/room", icon: <Home size={20} />, label: useKanji ? "7. 泊まる部屋" : "7. とまるへや" },
+    { to: "/memo", icon: <FileText size={20} />, label: useKanji ? "8. メモ" : "8. めも" },
+    { to: "/pocket-money", icon: <Wallet size={20} />, label: useKanji ? "9. お小遣い帳" : "9. おこづかいちょう" },
+    { to: "/roles", icon: <Users size={20} />, label: useKanji ? "10. かかり" : "10. かかり" },
+    { to: "/custom/11", icon: <FilePlus size={20} />, label: useKanji ? "11. フリーページ1" : "11. ふりーぺーじ1" },
+    { to: "/custom/12", icon: <FilePlus size={20} />, label: useKanji ? "12. フリーページ2" : "12. ふりーぺーじ2" },
+    { to: "/custom/13", icon: <FilePlus size={20} />, label: useKanji ? "13. フリーページ3" : "13. ふりーぺーじ3" },
+    { to: "/custom/14", icon: <FilePlus size={20} />, label: useKanji ? "14. フリーページ4" : "14. ふりーぺーじ4" },
+    { to: "/custom/15", icon: <FilePlus size={20} />, label: useKanji ? "15. フリーページ5" : "15. ふりーぺーじ5" },
   ];
 
   return (
     <aside className="sidebar">
       <div className="flex items-center gap-2 mb-6 px-2">
         <BookOpen size={28} color="var(--primary)" />
-        <h2 style={{ margin: 0, fontSize: '1.25rem' }}>しおりメーカー</h2>
+        <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{useKanji ? 'しおりメーカー' : 'しおりめーかー'}</h2>
       </div>
 
       <nav className="flex-col gap-2 flex" style={{ flex: 1 }}>
@@ -68,13 +70,17 @@ function Sidebar() {
       </nav>
 
       <div className="mt-8 pt-4 border-t" style={{ borderTop: '1px solid var(--border)' }}>
+        <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '0.5rem' }}>
+          <SettingsIcon size={20} />
+          {useKanji ? '設定' : 'せってい'}
+        </NavLink>
         <NavLink to="/preview" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '0.5rem', background: 'var(--primary-light)', color: 'var(--primary)' }}>
           <Printer size={20} />
-          完成プレビュー
+          {useKanji ? '完成プレビュー' : 'かんせいぷれびゅー'}
         </NavLink>
         <button onClick={handleReset} className="btn btn-danger" style={{ width: '100%' }}>
           <Trash2 size={18} />
-          データリセット
+          {useKanji ? 'データリセット' : 'でーたりせっと'}
         </button>
       </div>
     </aside>
@@ -82,6 +88,19 @@ function Sidebar() {
 }
 
 function App() {
+  const { data, bgmUrl } = useShiori();
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (data.settings.bgmEnabled && bgmUrl) {
+        audioRef.current.play().catch(e => console.log('BGM playback failed:', e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [data.settings.bgmEnabled, bgmUrl]);
+
   return (
     <div className="app-container">
       <Sidebar />
@@ -100,9 +119,13 @@ function App() {
             <Route path="/roles" element={<Page10Roles />} />
             <Route path="/custom/:id" element={<PageCustom />} />
             <Route path="/preview" element={<Preview />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </div>
       </main>
+      {bgmUrl && (
+        <audio ref={audioRef} src={bgmUrl} loop />
+      )}
     </div>
   );
 }
