@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useShiori } from '../context/ShioriContext';
 import { Plus, Trash2 } from 'lucide-react';
+import { t } from '../utils/i18n';
 
 export default function Page9PocketMoney() {
   const { data, updateSection } = useShiori();
+  const { useKanji } = data.settings;
   const pocketMoney = data.pocketMoney;
   const [newItem, setNewItem] = useState({ item: '', cost: '' });
 
@@ -38,25 +40,27 @@ export default function Page9PocketMoney() {
   return (
     <div className="animation-fade-in">
       <div className="page-header">
-        <h1>9. お小遣い帳</h1>
-        <p className="text-muted">予算と使ったお金を管理します。</p>
+        <h1>{t(useKanji, '9. お小遣い帳', '9. おこづかいちょう')}</h1>
+        <p className="text-muted">
+          {t(useKanji, '予算と使ったお金を管理します。', 'よさんと つかった おかねを かんりします。')}
+        </p>
       </div>
 
       <div className="grid-2 mb-4">
         <div className="card" style={{ borderLeft: '4px solid var(--primary)' }}>
-          <h3 className="text-muted" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>予算</h3>
+          <h3 className="text-muted" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>{t(useKanji, '予算', 'よさん')}</h3>
           <div className="flex items-center gap-2">
             <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>¥</span>
             <input 
               type="number" 
               value={pocketMoney.budget} 
               onChange={handleBudgetChange} 
-              style={{ fontSize: '1.5rem', fontWeight: 'bold', border: 'none', borderBottom: '2px solid var(--border)', borderRadius: 0, padding: '0.2rem' }}
+              style={{ fontSize: '1.5rem', fontWeight: 'bold', border: 'none', borderBottom: '2px solid var(--border)', borderRadius: 0, padding: '0.2rem', background: 'transparent' }}
             />
           </div>
         </div>
         <div className="card" style={{ borderLeft: `4px solid ${remaining >= 0 ? 'var(--secondary)' : 'var(--danger)'}` }}>
-          <h3 className="text-muted" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>残り</h3>
+          <h3 className="text-muted" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>{t(useKanji, '残り', 'のこり')}</h3>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', color: remaining >= 0 ? 'inherit' : 'var(--danger)' }}>
             ¥ {remaining.toLocaleString()}
           </div>
@@ -64,26 +68,26 @@ export default function Page9PocketMoney() {
       </div>
 
       <div className="card">
-        <h3 className="mb-4">使ったお金リスト</h3>
+        <h3 className="mb-4">{t(useKanji, '使ったお金リスト', 'つかった おかね りすと')}</h3>
         
         <div className="flex gap-2 mb-4">
           <input 
             type="text" 
             value={newItem.item} 
             onChange={(e) => setNewItem({...newItem, item: e.target.value})} 
-            placeholder="買ったもの（例：お土産）"
+            placeholder={t(useKanji, '買ったもの（例：お土産）', 'かったもの（れい：おみやげ）')}
             style={{ flex: 2 }}
           />
           <input 
             type="number" 
             value={newItem.cost} 
             onChange={(e) => setNewItem({...newItem, cost: e.target.value})} 
-            placeholder="金額"
+            placeholder={t(useKanji, '金額', 'きんがく')}
             style={{ flex: 1 }}
             onKeyPress={(e) => e.key === 'Enter' && addExpense()}
           />
           <button className="btn btn-primary" onClick={addExpense}>
-            <Plus size={20} /> 記録
+            <Plus size={20} /> {t(useKanji, '記録', 'きろく')}
           </button>
         </div>
 
@@ -100,7 +104,7 @@ export default function Page9PocketMoney() {
             </div>
           ))}
           {pocketMoney.expenses.length === 0 && (
-            <p className="text-center text-muted mt-4">まだ使った記録がありません。</p>
+            <p className="text-center text-muted mt-4">{t(useKanji, 'まだ使った記録がありません。', 'まだ つかった きろくが ありません。')}</p>
           )}
         </div>
       </div>

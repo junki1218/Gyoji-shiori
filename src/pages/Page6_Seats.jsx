@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useShiori } from '../context/ShioriContext';
+import { t } from '../utils/i18n';
 
 export default function Page6Seats() {
   const { data, updateSection } = useShiori();
+  const { useKanji } = data.settings;
   const seats = data.seats;
 
   const handleTypeChange = (e) => {
@@ -20,42 +22,43 @@ export default function Page6Seats() {
     updateSection('seats', { ...seats, assignments: newAssignments });
   };
 
-  // Generate seat layout
   const rows = Array.from({ length: seats.rows }, (_, i) => i);
   const cols = Array.from({ length: seats.cols }, (_, i) => i);
 
   return (
     <div className="animation-fade-in">
       <div className="page-header">
-        <h1>6. 座席（バス・電車）</h1>
-        <p className="text-muted">移動時の座席表を作成します。</p>
+        <h1>{t(useKanji, '6. 座席', '6. ざせき')}</h1>
+        <p className="text-muted">
+          {t(useKanji, '移動時の座席表を作成します。', 'いどうじの ざせきひょうを つくります。')}
+        </p>
       </div>
 
       <div className="card mb-4">
         <div className="grid-2">
           <div className="form-group">
-            <label>乗り物の種類</label>
+            <label>{t(useKanji, '乗り物の種類', 'のりものの しゅるい')}</label>
             <select value={seats.transportType} onChange={handleTypeChange}>
-              <option value="bus">バス</option>
-              <option value="train">電車（新幹線など）</option>
+              <option value="bus">{t(useKanji, 'バス', 'ばす')}</option>
+              <option value="train">{t(useKanji, '電車', 'でんしゃ')}</option>
             </select>
           </div>
           <div className="flex gap-4">
             <div className="form-group">
-              <label>列数 (タテ)</label>
+              <label>{t(useKanji, '列数 (タテ)', 'れつすう')}</label>
               <input type="number" name="rows" min="1" max="20" value={seats.rows} onChange={handleDimensionChange} />
             </div>
             <div className="form-group">
-              <label>席数 (ヨコ)</label>
+              <label>{t(useKanji, '席数 (ヨコ)', 'せきすう')}</label>
               <input type="number" name="cols" min="1" max="10" value={seats.cols} onChange={handleDimensionChange} />
             </div>
           </div>
         </div>
 
-        <div className="mt-8 overflow-auto" style={{ padding: '1rem', background: 'var(--background)', borderRadius: 'var(--radius-md)' }}>
+        <div className="mt-8 overflow-auto" style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
           <div style={{ display: 'inline-block', minWidth: '100%' }}>
             {seats.transportType === 'bus' && (
-              <div className="text-center mb-4 text-muted font-bold">運転席 / 前方</div>
+              <div className="text-center mb-4 text-muted font-bold">{t(useKanji, '運転席 / 前方', 'うんてんせき / ぜんぽう')}</div>
             )}
             {rows.map(row => (
               <div key={row} className="flex justify-center gap-2 mb-2">

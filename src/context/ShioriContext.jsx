@@ -11,13 +11,13 @@ const defaultState = {
   destination: { name: '', address: '', description: '', mapUrl: '' },
   goals: { classGoal: '', personalGoal: '' },
   belongings: [
-    { id: '1', name: '着替え', isEssential: true },
-    { id: '2', name: '洗面用具', isEssential: true },
-    { id: '3', name: '筆記用具', isEssential: true },
-    { id: '4', name: '常備薬', isEssential: true },
+    { id: '1', name: '着替え', isEssential: true, image: null },
+    { id: '2', name: '洗面用具', isEssential: true, image: null },
+    { id: '3', name: '筆記用具', isEssential: true, image: null },
+    { id: '4', name: '常備薬', isEssential: true, image: null },
   ],
   schedule: [
-    { id: '1', date: '', time: '08:00', activity: '学校集合' }
+    { id: '1', date: '', time: '08:00', activity: '学校集合', image: null }
   ],
   seats: { transportType: 'bus', rows: 10, cols: 4, assignments: {} },
   room: { roomNumber: '', capacity: 4, members: [] },
@@ -29,11 +29,11 @@ const defaultState = {
     { id: '3', roleName: '美化係', personName: '' }
   ],
   customPages: [
-    { id: 11, title: 'フリーページ 1', content: '' },
-    { id: 12, title: 'フリーページ 2', content: '' },
-    { id: 13, title: 'フリーページ 3', content: '' },
-    { id: 14, title: 'フリーページ 4', content: '' },
-    { id: 15, title: 'フリーページ 5', content: '' },
+    { id: 11, title: 'フリーページ 1', content: '', bgImage: null, comments: [] },
+    { id: 12, title: 'フリーページ 2', content: '', bgImage: null, comments: [] },
+    { id: 13, title: 'フリーページ 3', content: '', bgImage: null, comments: [] },
+    { id: 14, title: 'フリーページ 4', content: '', bgImage: null, comments: [] },
+    { id: 15, title: 'フリーページ 5', content: '', bgImage: null, comments: [] },
   ],
   settings: {
     useKanji: true,
@@ -63,6 +63,10 @@ export function ShioriProvider({ children }) {
     try {
       localStorage.setItem('shioriData', JSON.stringify(data));
     } catch (e) {
+      // If quota exceeded, warn the user (common with Base64 images)
+      if (e.name === 'QuotaExceededError') {
+        alert('保存容量がいっぱいです。大きな画像を削除してください。');
+      }
       console.error('Failed to save data:', e);
     }
   }, [data]);
