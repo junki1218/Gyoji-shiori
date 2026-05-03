@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
-import { 
-  BookOpen, Calendar, MapPin, Target, Backpack, Clock, 
-  Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2, Settings as SettingsIcon 
+import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import {
+  BookOpen, Calendar, MapPin, Target, Backpack, Clock,
+  Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2, Settings as SettingsIcon,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useShiori } from './context/ShioriContext';
 
@@ -87,6 +88,41 @@ function Sidebar() {
   );
 }
 
+const PAGE_ROUTES = [
+  "/", "/destination", "/goals", "/belongings", "/schedule",
+  "/seats", "/room", "/memo", "/pocket-money", "/roles",
+  "/custom/11", "/custom/12", "/custom/13", "/custom/14", "/custom/15",
+];
+
+function PageNav() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { data } = useShiori();
+  const { useKanji } = data.settings;
+  const currentIndex = PAGE_ROUTES.indexOf(location.pathname);
+
+  if (currentIndex === -1) return null;
+
+  const prev = currentIndex > 0 ? PAGE_ROUTES[currentIndex - 1] : null;
+  const next = currentIndex < PAGE_ROUTES.length - 1 ? PAGE_ROUTES[currentIndex + 1] : "/preview";
+
+  return (
+    <div className="page-nav flex justify-between mt-8 pt-4" style={{ borderTop: '1px dashed var(--border)' }}>
+      {prev ? (
+        <button className="btn btn-secondary" onClick={() => navigate(prev)}>
+          <ChevronLeft size={18} /> {useKanji ? '前のページ' : 'まえの ぺーじ'}
+        </button>
+      ) : <span />}
+      <button className="btn btn-primary" onClick={() => navigate(next)}>
+        {next === "/preview"
+          ? (useKanji ? 'プレビューへ' : 'ぷれびゅーへ')
+          : (useKanji ? '次のページ' : 'つぎの ぺーじ')}
+        <ChevronRight size={18} />
+      </button>
+    </div>
+  );
+}
+
 function App() {
   const { data, bgmUrl } = useShiori();
   const audioRef = useRef(null);
@@ -121,6 +157,7 @@ function App() {
             <Route path="/preview" element={<Preview />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
+          <PageNav />
         </div>
       </main>
       {bgmUrl && (
