@@ -20,6 +20,7 @@ import Page9PocketMoney from './pages/Page9_PocketMoney';
 import Page10Roles from './pages/Page10_Roles';
 import PageCustom from './pages/PageCustom';
 import Preview from './pages/Preview';
+import Print from './pages/Print';
 import Settings from './pages/Settings';
 
 function Sidebar() {
@@ -78,6 +79,10 @@ function Sidebar() {
         <NavLink to="/preview" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '0.5rem', background: 'var(--primary-light)', color: 'var(--primary)' }}>
           <Printer size={20} />
           {useKanji ? '完成プレビュー' : 'かんせいぷれびゅー'}
+        </NavLink>
+        <NavLink to="/print" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '0.5rem', background: 'rgba(45,96,80,0.35)', color: '#81C784' }}>
+          <Printer size={20} />
+          {useKanji ? '印刷' : 'いんさつ'}
         </NavLink>
         <button onClick={handleReset} className="btn btn-danger" style={{ width: '100%' }}>
           <Trash2 size={18} />
@@ -155,6 +160,7 @@ function App() {
             <Route path="/roles" element={<Page10Roles />} />
             <Route path="/custom/:id" element={<PageCustom />} />
             <Route path="/preview" element={<Preview />} />
+            <Route path="/print" element={<Print />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
           <PageNav />
