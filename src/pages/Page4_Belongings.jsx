@@ -63,7 +63,7 @@ export default function Page4Belongings() {
             value={newItem} 
             onChange={(e) => setNewItem(e.target.value)} 
             placeholder={t(useKanji, '新しい持ち物を入力...', 'あたらしい もちものを にゅうりょく...')}
-            onKeyPress={(e) => e.key === 'Enter' && addItem()}
+            onKeyDown={(e) => e.key === 'Enter' && addItem()}
           />
           <button className="btn btn-primary" onClick={addItem}>
             <Plus size={20} /> {t(useKanji, '追加', 'ついか')}

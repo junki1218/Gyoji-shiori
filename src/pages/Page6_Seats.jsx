@@ -13,7 +13,16 @@ export default function Page6Seats() {
 
   const handleDimensionChange = (e) => {
     const { name, value } = e.target;
-    updateSection('seats', { ...seats, [name]: parseInt(value) || 1 });
+    const newVal = parseInt(value) || 1;
+    const newRows = name === 'rows' ? newVal : seats.rows;
+    const newCols = name === 'cols' ? newVal : seats.cols;
+    const cleanedAssignments = Object.fromEntries(
+      Object.entries(seats.assignments).filter(([key]) => {
+        const [r, c] = key.split('-').map(Number);
+        return r < newRows && c < newCols;
+      })
+    );
+    updateSection('seats', { ...seats, [name]: newVal, assignments: cleanedAssignments });
   };
 
   const handleSeatChange = (row, col, value) => {

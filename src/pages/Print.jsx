@@ -74,7 +74,7 @@ export default function Print() {
                   {data.dateTime.meetingTime && (
                     <div className="pt-cover-row">
                       <span className="pt-cover-label">{t(useKanji, '集　合', 'しゅうごう')}</span>
-                      <span>{data.dateTime.meetingTime}{data.dateTime.meetingPlace ? `　${data.dateTime.meetingPlace}` : ''}</span>
+                      <span>{data.dateTime.meetingTime}{data.dateTime.meetingPlace ? ` ${data.dateTime.meetingPlace}` : ''}</span>
                     </div>
                   )}
                 </div>

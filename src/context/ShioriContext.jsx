@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ShioriContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useShiori() {
   return useContext(ShioriContext);
 }
@@ -49,7 +50,18 @@ export function ShioriProvider({ children }) {
       const saved = localStorage.getItem('shioriData');
       if (saved) {
         const parsed = JSON.parse(saved);
-        return { ...defaultState, ...parsed, settings: { ...defaultState.settings, ...parsed.settings } };
+        return {
+          ...defaultState,
+          ...parsed,
+          settings: { ...defaultState.settings, ...parsed.settings },
+          pocketMoney: { ...defaultState.pocketMoney, ...parsed.pocketMoney },
+          customPages: parsed.customPages
+            ? defaultState.customPages.map(def => {
+                const saved = parsed.customPages.find(p => p.id === def.id);
+                return saved ? { ...def, ...saved } : def;
+              })
+            : defaultState.customPages,
+        };
       }
     } catch (e) {
       console.error('Failed to load saved data:', e);

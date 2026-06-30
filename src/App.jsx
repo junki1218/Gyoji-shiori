@@ -27,6 +27,14 @@ function Sidebar() {
   const { data, resetData } = useShiori();
   const { useKanji } = data.settings;
   const navigate = useNavigate();
+  const location = useLocation();
+  const activeRef = useRef(null);
+
+  useEffect(() => {
+    if (activeRef.current) {
+      activeRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [location.pathname]);
 
   const handleReset = () => {
     resetData();
@@ -53,17 +61,22 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <div className="flex items-center gap-2 mb-6 px-2">
-        <BookOpen size={28} color="var(--primary)" />
-        <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{useKanji ? 'しおりメーカー' : 'しおりめーかー'}</h2>
-      </div>
+      <NavLink to="/" style={{ textDecoration: 'none' }}>
+        <div className="flex items-center gap-2 mb-6 px-2" style={{ cursor: 'pointer' }}>
+          <BookOpen size={28} color="var(--primary)" />
+          <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-main)' }}>
+            {useKanji ? 'しおりメーカー' : 'しおりめーかー'}
+          </h2>
+        </div>
+      </NavLink>
 
       <nav className="flex-col gap-2 flex" style={{ flex: 1 }}>
         {navItems.map((item) => (
-          <NavLink 
-            key={item.to} 
-            to={item.to} 
+          <NavLink
+            key={item.to}
+            to={item.to}
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            ref={location.pathname === item.to ? activeRef : null}
           >
             {item.icon}
             {item.label}

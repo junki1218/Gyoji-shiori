@@ -67,7 +67,7 @@ export default function Page7Room() {
               value={newMember} 
               onChange={(e) => setNewMember(e.target.value)} 
               placeholder={t(useKanji, 'メンバーの名前...', 'めんばーの なまえ...')}
-              onKeyPress={(e) => e.key === 'Enter' && addMember()}
+              onKeyDown={(e) => e.key === 'Enter' && addMember()}
               disabled={room.members.length >= room.capacity}
             />
             <button 

@@ -39,7 +39,7 @@ export default function Preview() {
               <p>{t(useKanji, '日程：', 'にってい：')}{data.dateTime.startDate}{data.dateTime.endDate ? ` 〜 ${data.dateTime.endDate}` : ''}</p>
             )}
             {data.dateTime.meetingTime && (
-              <p>{t(useKanji, '集合時間：', 'しゅうごう じかん：')}{data.dateTime.meetingTime}{data.dateTime.meetingPlace ? `　${data.dateTime.meetingPlace}` : ''}</p>
+              <p>{t(useKanji, '集合時間：', 'しゅうごう じかん：')}{data.dateTime.meetingTime}{data.dateTime.meetingPlace ? ` ${data.dateTime.meetingPlace}` : ''}</p>
             )}
             {data.destination.name && (
               <p>{t(useKanji, '行き先：', 'いきさき：')}{data.destination.name}</p>
