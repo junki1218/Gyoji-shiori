@@ -23,6 +23,7 @@ const defaultState = {
   seats: { transportType: 'bus', rows: 10, cols: 4, assignments: {} },
   room: { roomNumber: '', capacity: 4, members: [] },
   memo: '',
+  memoEmotion: '',
   pocketMoney: { budget: 5000, expenses: [] },
   roles: [
     { id: '1', roleName: '班長', personName: '' },

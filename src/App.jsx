@@ -5,7 +5,7 @@ import {
   BookOpen, Calendar, MapPin, Target, Backpack, Clock,
   Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2,
   Settings as SettingsIcon, ChevronLeft, ChevronRight, Menu, X,
-  RotateCcw, ALargeSmall
+  RotateCcw, ALargeSmall, Volume2, VolumeX
 } from 'lucide-react';
 import { useShiori } from './context/ShioriContext';
 
@@ -101,6 +101,52 @@ function FontScaleController() {
         </div>
       )}
     </div>
+  );
+}
+
+/* ── TTS 読み上げボタン ──────────────────────────── */
+function TTSController() {
+  const [speaking, setSpeaking] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeaking(false);
+  }, [location.pathname]);
+
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+
+  const handleClick = () => {
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+    const panel = document.querySelector('.glass-panel');
+    const rawText = panel ? panel.innerText : '';
+    const text = rawText.replace(/\s+/g, ' ').trim().slice(0, 2000);
+    if (!text) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ja-JP';
+    utter.rate = 0.85;
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+    setSpeaking(true);
+  };
+
+  return (
+    <button
+      className={`tts-btn${speaking ? ' tts-speaking' : ''}`}
+      onClick={handleClick}
+      aria-label={speaking ? '読み上げを停止' : 'このページを読み上げ'}
+      title={speaking ? '読み上げを停止' : 'このページを読み上げ'}
+    >
+      {speaking ? <VolumeX size={20} /> : <Volume2 size={20} />}
+    </button>
   );
 }
 
@@ -272,14 +318,18 @@ function PageNav() {
   const prev = currentIndex > 0 ? PAGE_ROUTES[currentIndex - 1] : null;
   const next = currentIndex < PAGE_ROUTES.length - 1 ? PAGE_ROUTES[currentIndex + 1] : '/preview';
 
+  const pageNum = currentIndex + 1;
+  const total = PAGE_ROUTES.length;
+
   return (
-    <div className="page-nav flex justify-between mt-8 pt-4" style={{ borderTop: '1px dashed var(--border)' }}>
+    <div className="page-nav flex justify-between items-center mt-8 pt-4" style={{ borderTop: '1px dashed var(--border)' }}>
       {prev ? (
         <button className="btn btn-secondary" onClick={() => navigate(prev)}>
           <ChevronLeft size={18} />
           <span>{useKanji ? '前のページ' : 'まえの ぺーじ'}</span>
         </button>
       ) : <span />}
+      <span className="page-nav-progress">{pageNum} / {total}</span>
       <button className="btn btn-primary" onClick={() => navigate(next)}>
         <span>
           {next === '/preview'
@@ -312,6 +362,7 @@ function App() {
     <>
       <OrientationGuard />
       <FontScaleController />
+      <TTSController />
       <div className="app-container">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="main-content">

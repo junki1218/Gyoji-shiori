@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useShiori } from '../context/ShioriContext';
-import { Plus, Trash2, Camera, Image as ImageIcon } from 'lucide-react';
+import { CheckCircle2, Circle, Star, Trash2, Camera } from 'lucide-react';
 import { t } from '../utils/i18n';
 import ImageWithZoom from '../components/ImageWithZoom';
 
@@ -9,11 +9,12 @@ export default function Page4Belongings() {
   const { useKanji } = data.settings;
   const belongings = data.belongings;
   const [newItem, setNewItem] = useState('');
+  const [recentlyPacked, setRecentlyPacked] = useState(new Set());
   const fileInputRefs = useRef({});
 
   const addItem = () => {
     if (!newItem.trim()) return;
-    const item = { id: Date.now().toString(), name: newItem, isEssential: false, image: null };
+    const item = { id: Date.now().toString(), name: newItem, isEssential: false, packed: false, image: null };
     updateSection('belongings', [...belongings, item]);
     setNewItem('');
   };
@@ -23,9 +24,27 @@ export default function Page4Belongings() {
   };
 
   const toggleEssential = (id) => {
-    updateSection('belongings', belongings.map(item => 
+    updateSection('belongings', belongings.map(item =>
       item.id === id ? { ...item, isEssential: !item.isEssential } : item
     ));
+  };
+
+  const togglePacked = (id) => {
+    const item = belongings.find(b => b.id === id);
+    const willBePacked = !(item?.packed ?? false);
+    updateSection('belongings', belongings.map(b =>
+      b.id === id ? { ...b, packed: !(b.packed ?? false) } : b
+    ));
+    if (willBePacked) {
+      setRecentlyPacked(prev => new Set([...prev, id]));
+      setTimeout(() => {
+        setRecentlyPacked(prev => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      }, 900);
+    }
   };
 
   const handleImageUpload = (id, e) => {
@@ -33,7 +52,7 @@ export default function Page4Belongings() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        updateSection('belongings', belongings.map(item => 
+        updateSection('belongings', belongings.map(item =>
           item.id === id ? { ...item, image: reader.result } : item
         ));
       };
@@ -42,10 +61,20 @@ export default function Page4Belongings() {
   };
 
   const removeImage = (id) => {
-    updateSection('belongings', belongings.map(item => 
+    updateSection('belongings', belongings.map(item =>
       item.id === id ? { ...item, image: null } : item
     ));
   };
+
+  const totalItems = belongings.length;
+  const packedCount = belongings.filter(b => b.packed ?? false).length;
+  const progressPct = totalItems > 0 ? Math.round((packedCount / totalItems) * 100) : 0;
+
+  const sortedBelongings = [...belongings].sort((a, b) => {
+    if (a.isEssential && !b.isEssential) return -1;
+    if (!a.isEssential && b.isEssential) return 1;
+    return 0;
+  });
 
   return (
     <div className="animation-fade-in">
@@ -56,59 +85,107 @@ export default function Page4Belongings() {
         </p>
       </div>
 
+      {totalItems > 0 && (
+        <div className="card mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <span style={{ fontSize: '1rem', fontWeight: 600 }}>
+              {t(useKanji, '準備できた', 'じゅんびできた')}
+            </span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 700, color: progressPct === 100 ? 'var(--secondary)' : 'var(--primary)' }}>
+              {packedCount} / {totalItems}
+            </span>
+          </div>
+          <div className="belongings-progress-track">
+            <div
+              className="belongings-progress-bar"
+              style={{
+                width: `${progressPct}%`,
+                background: progressPct === 100 ? 'var(--secondary)' : progressPct > 80 ? '#FFB74D' : 'var(--primary)',
+              }}
+            />
+          </div>
+          {progressPct === 100 && (
+            <p style={{ textAlign: 'center', marginTop: '0.5rem', color: 'var(--secondary)', fontWeight: 600, fontSize: '1.1rem' }}>
+              🎒 {t(useKanji, '準備完了！', 'じゅんびかんりょう！')}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="card mb-4">
         <div className="flex gap-2 mb-4">
-          <input 
-            type="text" 
-            value={newItem} 
-            onChange={(e) => setNewItem(e.target.value)} 
+          <input
+            type="text"
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
             placeholder={t(useKanji, '新しい持ち物を入力...', 'あたらしい もちものを にゅうりょく...')}
             onKeyDown={(e) => e.key === 'Enter' && addItem()}
           />
-          <button className="btn btn-primary" onClick={addItem}>
-            <Plus size={20} /> {t(useKanji, '追加', 'ついか')}
+          <button className="btn btn-primary" onClick={addItem} style={{ whiteSpace: 'nowrap' }}>
+            + {t(useKanji, '追加', 'ついか')}
           </button>
         </div>
 
-        <div className="flex-col gap-3">
-          {belongings.map(item => (
-            <div key={item.id} className="flex items-center justify-between p-4 border rounded" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.01)' }}>
-              <div className="flex items-center gap-4" style={{ flex: 1 }}>
-                <input 
-                  type="checkbox" 
-                  checked={item.isEssential} 
-                  onChange={() => toggleEssential(item.id)} 
-                  style={{ width: '1.2rem', height: '1.2rem' }}
-                />
-                <span style={{ fontWeight: item.isEssential ? '600' : '400', flex: 1 }}>{item.name}</span>
-                
-                <div className="flex items-center gap-2">
-                  <ImageWithZoom src={item.image} onRemove={() => removeImage(item.id)} label={item.name} />
-                  {!item.image && (
-                    <button className="btn-icon" onClick={() => fileInputRefs.current[item.id].click()}>
-                      <Camera size={20} />
-                    </button>
-                  )}
-                  <input 
-                    type="file" 
-                    ref={el => fileInputRefs.current[item.id] = el}
-                    onChange={(e) => handleImageUpload(item.id, e)}
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                  />
-                </div>
+        <div className="flex-col gap-2">
+          {sortedBelongings.map(item => (
+            <div
+              key={item.id}
+              className={`belonging-item${(item.packed ?? false) ? ' belonging-packed' : ''}${recentlyPacked.has(item.id) ? ' belonging-flash' : ''}`}
+              onClick={() => togglePacked(item.id)}
+              role="checkbox"
+              aria-checked={item.packed ?? false}
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === ' ' || e.key === 'Enter') && togglePacked(item.id)}
+            >
+              <div className="belonging-check">
+                {(item.packed ?? false)
+                  ? <CheckCircle2 size={34} strokeWidth={2.5} color="var(--secondary)" />
+                  : <Circle size={34} strokeWidth={2} color="rgba(255,255,255,0.3)" />
+                }
               </div>
 
-              <div className="flex items-center gap-2 ml-4">
-                {item.isEssential && <span className="text-xs" style={{ color: 'var(--danger)', background: 'rgba(255,138,128,0.2)', padding: '0.1rem 0.5rem', borderRadius: '4px' }}>{t(useKanji, '必須', 'ひっす')}</span>}
+              <span className="belonging-name">{item.name}</span>
+
+              {item.image && (
+                <div onClick={e => e.stopPropagation()}>
+                  <ImageWithZoom src={item.image} onRemove={() => removeImage(item.id)} label={item.name} />
+                </div>
+              )}
+
+              <div className="belonging-actions" onClick={e => e.stopPropagation()}>
+                {item.isEssential && (
+                  <span className="belonging-essential">{t(useKanji, '必須', 'ひっす')}</span>
+                )}
+                <button
+                  className="btn-icon"
+                  onClick={() => toggleEssential(item.id)}
+                  title={t(useKanji, item.isEssential ? '必須を解除' : '必須にする', item.isEssential ? 'ひっすを かいじょ' : 'ひっすにする')}
+                  style={{ color: item.isEssential ? '#FFB74D' : 'rgba(255,255,255,0.3)' }}
+                >
+                  <Star size={18} fill={item.isEssential ? '#FFB74D' : 'none'} />
+                </button>
+                {!item.image && (
+                  <button className="btn-icon" onClick={() => fileInputRefs.current[item.id]?.click()}>
+                    <Camera size={18} />
+                  </button>
+                )}
                 <button className="btn-icon" onClick={() => removeItem(item.id)}>
                   <Trash2 size={18} />
                 </button>
+                <input
+                  type="file"
+                  ref={el => fileInputRefs.current[item.id] = el}
+                  onChange={(e) => handleImageUpload(item.id, e)}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
               </div>
             </div>
           ))}
           {belongings.length === 0 && (
-            <p className="text-center text-muted mt-4">{t(useKanji, '持ち物が登録されていません。', 'もちものが とうろくされていません。')}</p>
+            <p className="text-center text-muted mt-4">
+              {t(useKanji, '持ち物が登録されていません。', 'もちものが とうろくされていません。')}
+            </p>
           )}
         </div>
       </div>
