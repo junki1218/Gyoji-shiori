@@ -8,7 +8,7 @@ export function useShiori() {
 }
 
 const defaultState = {
-  dateTime: { title: '修学旅行', startDate: '', endDate: '', meetingTime: '', meetingPlace: '' },
+  dateTime: { title: '修学旅行', startDate: '', endDate: '', meetingTime: '', meetingPlace: '', meetingPlaceImage: null },
   destination: { name: '', address: '', description: '', mapUrl: '' },
   goals: { classGoal: '', personalGoal: '' },
   belongings: [

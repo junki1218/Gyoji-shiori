@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useShiori } from '../context/ShioriContext';
 import { t } from '../utils/i18n';
 import AnalogClock from '../components/AnalogClock';
+import ImageWithZoom from '../components/ImageWithZoom';
+import { Camera } from 'lucide-react';
 
 export default function Page1DateTime() {
   const { data, updateSection } = useShiori();
   const { useKanji } = data.settings;
   const dt = data.dateTime;
+  const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateSection('dateTime', { ...dt, [name]: value });
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      updateSection('dateTime', { ...dt, meetingPlaceImage: reader.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    updateSection('dateTime', { ...dt, meetingPlaceImage: null });
   };
 
   return (
@@ -75,13 +92,37 @@ export default function Page1DateTime() {
 
         <div className="form-group mt-4">
           <label>{t(useKanji, '集合場所', 'しゅうごう ばしょ')}</label>
-          <input
-            type="text"
-            name="meetingPlace"
-            value={dt.meetingPlace}
-            onChange={handleChange}
-            placeholder={t(useKanji, '例：学校の体育館前', 'れい：がっこうの たいいくかんまえ')}
-          />
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              name="meetingPlace"
+              value={dt.meetingPlace}
+              onChange={handleChange}
+              placeholder={t(useKanji, '例：学校の体育館前', 'れい：がっこうの たいいくかんまえ')}
+              style={{ flex: 1 }}
+            />
+            <ImageWithZoom
+              src={dt.meetingPlaceImage}
+              onRemove={removeImage}
+              label={dt.meetingPlace}
+            />
+            {!dt.meetingPlaceImage && (
+              <button
+                className="btn-icon"
+                onClick={() => fileInputRef.current.click()}
+                title={t(useKanji, '写真をアップロード', 'しゃしんを あっぷろーど')}
+              >
+                <Camera size={22} />
+              </button>
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              style={{ display: 'none' }}
+            />
+          </div>
         </div>
       </div>
     </div>

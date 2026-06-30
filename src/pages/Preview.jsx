@@ -39,7 +39,15 @@ export default function Preview() {
               <p>{t(useKanji, '日程：', 'にってい：')}{data.dateTime.startDate}{data.dateTime.endDate ? ` 〜 ${data.dateTime.endDate}` : ''}</p>
             )}
             {data.dateTime.meetingTime && (
-              <p>{t(useKanji, '集合時間：', 'しゅうごう じかん：')}{data.dateTime.meetingTime}{data.dateTime.meetingPlace ? ` ${data.dateTime.meetingPlace}` : ''}</p>
+              <p>{t(useKanji, '集合時間：', 'しゅうごう じかん：')}{data.dateTime.meetingTime}</p>
+            )}
+            {data.dateTime.meetingPlace && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'center' }}>
+                <p style={{ margin: 0 }}>{t(useKanji, '集合場所：', 'しゅうごう ばしょ：')}{data.dateTime.meetingPlace}</p>
+                {data.dateTime.meetingPlaceImage && (
+                  <img src={data.dateTime.meetingPlaceImage} alt={data.dateTime.meetingPlace} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ccc' }} />
+                )}
+              </div>
             )}
             {data.destination.name && (
               <p>{t(useKanji, '行き先：', 'いきさき：')}{data.destination.name}</p>

@@ -73,8 +73,19 @@ export default function Print() {
                   )}
                   {data.dateTime.meetingTime && (
                     <div className="pt-cover-row">
-                      <span className="pt-cover-label">{t(useKanji, '集　合', 'しゅうごう')}</span>
-                      <span>{data.dateTime.meetingTime}{data.dateTime.meetingPlace ? ` ${data.dateTime.meetingPlace}` : ''}</span>
+                      <span className="pt-cover-label">{t(useKanji, '集合時間', 'しゅうごうじかん')}</span>
+                      <span>{data.dateTime.meetingTime}</span>
+                    </div>
+                  )}
+                  {data.dateTime.meetingPlace && (
+                    <div className="pt-cover-row" style={{ alignItems: 'flex-start' }}>
+                      <span className="pt-cover-label">{t(useKanji, '集合場所', 'しゅうごうばしょ')}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>{data.dateTime.meetingPlace}</span>
+                        {data.dateTime.meetingPlaceImage && (
+                          <img src={data.dateTime.meetingPlaceImage} alt={data.dateTime.meetingPlace} style={{ width: '56px', height: '42px', objectFit: 'cover', borderRadius: '3px', border: '1px solid #ccc', flexShrink: 0 }} />
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
