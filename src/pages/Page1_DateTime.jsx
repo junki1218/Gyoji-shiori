@@ -58,29 +58,30 @@ export default function Page1DateTime() {
         <div className="flex items-end gap-6 mt-4">
           <div className="form-group" style={{ flex: 1 }}>
             <label>{t(useKanji, '集合時間', 'しゅうごう じかん')}</label>
-            <input 
-              type="time" 
-              name="meetingTime" 
-              value={dt.meetingTime} 
-              onChange={handleChange} 
+            <input
+              type="time"
+              name="meetingTime"
+              value={dt.meetingTime}
+              onChange={handleChange}
             />
           </div>
           <div className="flex-col items-center gap-1 mb-2">
-             <AnalogClock time={dt.meetingTime} size={80} />
-             <span className="text-xs text-muted" style={{ display: 'block', textAlign: 'center' }}>
-               {dt.meetingTime || '00:00'}
-             </span>
+            <AnalogClock time={dt.meetingTime} size={80} />
+            <span className="text-xs text-muted" style={{ display: 'block', textAlign: 'center' }}>
+              {dt.meetingTime || '00:00'}
+            </span>
           </div>
-          <div className="form-group" style={{ flex: 2 }}>
-            <label>{t(useKanji, '集合場所', 'しゅうごう ばしょ')}</label>
-            <input 
-              type="text" 
-              name="meetingPlace" 
-              value={dt.meetingPlace} 
-              onChange={handleChange} 
-              placeholder={t(useKanji, '例：学校の体育館前', 'れい：がっこうの たいいくかんまえ')} 
-            />
-          </div>
+        </div>
+
+        <div className="form-group mt-4">
+          <label>{t(useKanji, '集合場所', 'しゅうごう ばしょ')}</label>
+          <input
+            type="text"
+            name="meetingPlace"
+            value={dt.meetingPlace}
+            onChange={handleChange}
+            placeholder={t(useKanji, '例：学校の体育館前', 'れい：がっこうの たいいくかんまえ')}
+          />
         </div>
       </div>
     </div>
