@@ -5,7 +5,7 @@ import {
   BookOpen, Calendar, MapPin, Target, Backpack, Clock,
   Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2,
   Settings as SettingsIcon, ChevronLeft, ChevronRight, Menu, X,
-  RotateCcw
+  RotateCcw, ALargeSmall
 } from 'lucide-react';
 import { useShiori } from './context/ShioriContext';
 
@@ -23,6 +23,86 @@ import PageCustom from './pages/PageCustom';
 import Preview from './pages/Preview';
 import Print from './pages/Print';
 import Settings from './pages/Settings';
+
+/* ── 文字サイズコントローラー ───────────────────── */
+const FONT_SCALES = [0.8, 0.9, 1.0, 1.15, 1.3, 1.5];
+
+function FontScaleController() {
+  const { data, updateSettings } = useShiori();
+  const fontScale = data.settings.fontScale ?? 1;
+  const [open, setOpen] = useState(false);
+
+  const idx = FONT_SCALES.reduce((best, s, i) =>
+    Math.abs(s - fontScale) < Math.abs(FONT_SCALES[best] - fontScale) ? i : best, 1);
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontScale * 16}px`;
+  }, [fontScale]);
+
+  const set = (newIdx) => {
+    if (newIdx >= 0 && newIdx < FONT_SCALES.length) {
+      updateSettings({ fontScale: FONT_SCALES[newIdx] });
+    }
+  };
+
+  const pct = Math.round(FONT_SCALES[idx] * 100);
+
+  return (
+    <div className={`fsc-wrap${open ? ' fsc-open' : ''}`}>
+      {/* トグルボタン */}
+      <button
+        className="fsc-toggle"
+        onClick={() => setOpen(v => !v)}
+        aria-label="文字サイズ"
+        title="文字サイズ"
+      >
+        <ALargeSmall size={20} />
+      </button>
+
+      {/* パネル */}
+      {open && (
+        <div className="fsc-panel">
+          <p className="fsc-label">文字サイズ</p>
+          <div className="fsc-row">
+            <button
+              className="fsc-btn"
+              onClick={() => set(idx - 1)}
+              disabled={idx === 0}
+              aria-label="文字を小さく"
+            >
+              A<sup>−</sup>
+            </button>
+            <span className="fsc-pct">{pct}%</span>
+            <button
+              className="fsc-btn"
+              onClick={() => set(idx + 1)}
+              disabled={idx === FONT_SCALES.length - 1}
+              aria-label="文字を大きく"
+            >
+              A<sup>+</sup>
+            </button>
+          </div>
+          {/* ステップインジケーター */}
+          <div className="fsc-dots">
+            {FONT_SCALES.map((_, i) => (
+              <button
+                key={i}
+                className={`fsc-dot${i === idx ? ' fsc-dot-active' : ''}`}
+                onClick={() => set(i)}
+                aria-label={`${Math.round(FONT_SCALES[i] * 100)}%`}
+              />
+            ))}
+          </div>
+          {idx !== 2 && (
+            <button className="fsc-reset" onClick={() => set(2)}>
+              リセット
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ── 縦向き警告オーバーレイ ─────────────────────── */
 function OrientationGuard() {
@@ -231,6 +311,7 @@ function App() {
   return (
     <>
       <OrientationGuard />
+      <FontScaleController />
       <div className="app-container">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="main-content">

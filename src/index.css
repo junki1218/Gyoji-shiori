@@ -629,6 +629,164 @@ button:focus-visible {
   h1 { font-size: 1.25rem; }
 }
 
+/* ================================================================
+   Font Scale Controller（右側フローティング）
+   ================================================================ */
+.fsc-wrap {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0;
+}
+
+/* トグルボタン */
+.fsc-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 56px;
+  background: rgba(26, 60, 52, 0.92);
+  border: 2px solid var(--border);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  backdrop-filter: blur(8px);
+  box-shadow: -2px 0 12px rgba(0,0,0,0.4);
+}
+.fsc-toggle:hover,
+.fsc-open .fsc-toggle {
+  background: rgba(36, 80, 68, 0.97);
+  color: var(--primary);
+}
+
+/* パネル */
+.fsc-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(20, 50, 42, 0.97);
+  border: 2px solid var(--border);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  padding: 0.85rem 1rem;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+  backdrop-filter: blur(12px);
+  min-width: 130px;
+  animation: fscSlideIn 0.18s ease-out;
+}
+@keyframes fscSlideIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.fsc-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.fsc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fsc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-main);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.15s, border-color 0.15s;
+  line-height: 1;
+}
+.fsc-btn:hover:not(:disabled) {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.fsc-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.fsc-pct {
+  font-size: 0.8rem;
+  color: var(--primary);
+  font-weight: bold;
+  min-width: 3em;
+  text-align: center;
+}
+
+/* ステップドット */
+.fsc-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.fsc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+.fsc-dot:hover {
+  background: rgba(255,255,255,0.45);
+  transform: scale(1.25);
+}
+.fsc-dot-active {
+  background: var(--primary);
+  transform: scale(1.3);
+}
+
+.fsc-reset {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+  padding: 0;
+  transition: color 0.15s;
+}
+.fsc-reset:hover { color: var(--text-main); }
+
+/* モバイルでは少し小さく */
+@media (max-width: 767px) {
+  .fsc-toggle {
+    width: 34px;
+    height: 48px;
+  }
+  .fsc-panel {
+    min-width: 110px;
+    padding: 0.65rem 0.75rem;
+  }
+}
+
 /* ── 安全領域（iPhone ノッチ・ホームバー対応） ── */
 @supports (padding: max(0px)) {
   .main-content {

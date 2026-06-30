@@ -40,7 +40,8 @@ const defaultState = {
     useKanji: true,
     bgmEnabled: false,
     seEnabled: true,
-    bgmFileName: ''
+    bgmFileName: '',
+    fontScale: 1
   }
 };
 
