@@ -16,6 +16,17 @@ export default function Page1DateTime() {
     updateSection('dateTime', { ...dt, [name]: value });
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return null;
+    const d = new Date(dateStr + 'T00:00:00');
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    const weekDays = useKanji
+      ? ['日', '月', '火', '水', '木', '金', '土']
+      : ['にち', 'げつ', 'か', 'すい', 'もく', 'きん', 'ど'];
+    return `${month}月${day}日（${weekDays[d.getDay()]}）`;
+  };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -54,21 +65,31 @@ export default function Page1DateTime() {
         <div className="grid-2">
           <div className="form-group">
             <label>{t(useKanji, '出発日', 'しゅっぱつび')}</label>
-            <input 
-              type="date" 
-              name="startDate" 
-              value={dt.startDate} 
-              onChange={handleChange} 
+            <input
+              type="date"
+              name="startDate"
+              value={dt.startDate}
+              onChange={handleChange}
             />
+            {dt.startDate && (
+              <p style={{ fontSize: '1.4rem', fontWeight: 'bold', marginTop: '0.4rem', color: 'var(--primary)', letterSpacing: '0.05em' }}>
+                {formatDate(dt.startDate)}
+              </p>
+            )}
           </div>
           <div className="form-group">
-            <label>{t(useKanji, '帰着日', 'きちゃくび')}</label>
-            <input 
-              type="date" 
-              name="endDate" 
-              value={dt.endDate} 
-              onChange={handleChange} 
+            <label>{t(useKanji, '帰る日', 'かえるひ')}</label>
+            <input
+              type="date"
+              name="endDate"
+              value={dt.endDate}
+              onChange={handleChange}
             />
+            {dt.endDate && (
+              <p style={{ fontSize: '1.4rem', fontWeight: 'bold', marginTop: '0.4rem', color: 'var(--primary)', letterSpacing: '0.05em' }}>
+                {formatDate(dt.endDate)}
+              </p>
+            )}
           </div>
         </div>
 
