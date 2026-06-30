@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
+// useLocation is used in Sidebar and PageNav components below
 import {
   BookOpen, Calendar, MapPin, Target, Backpack, Clock,
-  Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2, Settings as SettingsIcon,
-  ChevronLeft, ChevronRight
+  Bus, Home, FileText, Wallet, Users, FilePlus, Printer, Trash2,
+  Settings as SettingsIcon, ChevronLeft, ChevronRight, Menu, X,
+  RotateCcw
 } from 'lucide-react';
 import { useShiori } from './context/ShioriContext';
 
-// Import Pages
 import Page1DateTime from './pages/Page1_DateTime';
 import Page2Destination from './pages/Page2_Destination';
 import Page3Goals from './pages/Page3_Goals';
@@ -23,7 +24,47 @@ import Preview from './pages/Preview';
 import Print from './pages/Print';
 import Settings from './pages/Settings';
 
-function Sidebar() {
+/* ── 縦向き警告オーバーレイ ─────────────────────── */
+function OrientationGuard() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      const isMobile = Math.min(window.innerWidth, window.innerHeight) < 768;
+      setShow(isPortrait && isMobile);
+    };
+
+    check();
+    window.addEventListener('resize', check);
+    window.addEventListener('orientationchange', check);
+
+    // 可能な場合は横向きにロック（Android PWA など）
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('landscape').catch(() => {});
+    }
+
+    return () => {
+      window.removeEventListener('resize', check);
+      window.removeEventListener('orientationchange', check);
+    };
+  }, []);
+
+  if (!show) return null;
+
+  return (
+    <div className="orient-guard">
+      <div className="orient-icon">
+        <RotateCcw size={64} strokeWidth={1.5} />
+      </div>
+      <p className="orient-title">端末を横向きにしてください</p>
+      <p className="orient-sub">Please rotate your device to landscape</p>
+    </div>
+  );
+}
+
+/* ── サイドバー ────────────────────────────────── */
+function Sidebar({ isOpen, onClose }) {
   const { data, resetData } = useShiori();
   const { useKanji } = data.settings;
   const navigate = useNavigate();
@@ -39,77 +80,104 @@ function Sidebar() {
   const handleReset = () => {
     resetData();
     navigate('/');
+    onClose();
   };
 
+  const iconSize = 18;
+
   const navItems = [
-    { to: "/", icon: <Calendar size={20} />, label: useKanji ? "1. 日時" : "1. にちじ" },
-    { to: "/destination", icon: <MapPin size={20} />, label: useKanji ? "2. 行き先" : "2. いきさき" },
-    { to: "/goals", icon: <Target size={20} />, label: useKanji ? "3. 目標" : "3. もくひょう" },
-    { to: "/belongings", icon: <Backpack size={20} />, label: useKanji ? "4. もちもの" : "4. もちもの" },
-    { to: "/schedule", icon: <Clock size={20} />, label: useKanji ? "5. スケジュール" : "5. スケジュール" },
-    { to: "/seats", icon: <Bus size={20} />, label: useKanji ? "6. 座席" : "6. ざせき" },
-    { to: "/room", icon: <Home size={20} />, label: useKanji ? "7. 泊まる部屋" : "7. とまるへや" },
-    { to: "/memo", icon: <FileText size={20} />, label: useKanji ? "8. メモ" : "8. めも" },
-    { to: "/pocket-money", icon: <Wallet size={20} />, label: useKanji ? "9. お小遣い帳" : "9. おこづかいちょう" },
-    { to: "/roles", icon: <Users size={20} />, label: useKanji ? "10. かかり" : "10. かかり" },
-    { to: "/custom/11", icon: <FilePlus size={20} />, label: useKanji ? "11. フリーページ1" : "11. ふりーぺーじ1" },
-    { to: "/custom/12", icon: <FilePlus size={20} />, label: useKanji ? "12. フリーページ2" : "12. ふりーぺーじ2" },
-    { to: "/custom/13", icon: <FilePlus size={20} />, label: useKanji ? "13. フリーページ3" : "13. ふりーぺーじ3" },
-    { to: "/custom/14", icon: <FilePlus size={20} />, label: useKanji ? "14. フリーページ4" : "14. ふりーぺーじ4" },
-    { to: "/custom/15", icon: <FilePlus size={20} />, label: useKanji ? "15. フリーページ5" : "15. ふりーぺーじ5" },
+    { to: '/', icon: <Calendar size={iconSize} />, label: useKanji ? '1. 日時' : '1. にちじ' },
+    { to: '/destination', icon: <MapPin size={iconSize} />, label: useKanji ? '2. 行き先' : '2. いきさき' },
+    { to: '/goals', icon: <Target size={iconSize} />, label: useKanji ? '3. 目標' : '3. もくひょう' },
+    { to: '/belongings', icon: <Backpack size={iconSize} />, label: useKanji ? '4. もちもの' : '4. もちもの' },
+    { to: '/schedule', icon: <Clock size={iconSize} />, label: useKanji ? '5. スケジュール' : '5. すけじゅーる' },
+    { to: '/seats', icon: <Bus size={iconSize} />, label: useKanji ? '6. 座席' : '6. ざせき' },
+    { to: '/room', icon: <Home size={iconSize} />, label: useKanji ? '7. 泊まる部屋' : '7. とまるへや' },
+    { to: '/memo', icon: <FileText size={iconSize} />, label: useKanji ? '8. メモ' : '8. めも' },
+    { to: '/pocket-money', icon: <Wallet size={iconSize} />, label: useKanji ? '9. お小遣い帳' : '9. おこづかいちょう' },
+    { to: '/roles', icon: <Users size={iconSize} />, label: useKanji ? '10. かかり' : '10. かかり' },
+    { to: '/custom/11', icon: <FilePlus size={iconSize} />, label: useKanji ? '11. フリーページ1' : '11. ふりーぺーじ1' },
+    { to: '/custom/12', icon: <FilePlus size={iconSize} />, label: useKanji ? '12. フリーページ2' : '12. ふりーぺーじ2' },
+    { to: '/custom/13', icon: <FilePlus size={iconSize} />, label: useKanji ? '13. フリーページ3' : '13. ふりーぺーじ3' },
+    { to: '/custom/14', icon: <FilePlus size={iconSize} />, label: useKanji ? '14. フリーページ4' : '14. ふりーぺーじ4' },
+    { to: '/custom/15', icon: <FilePlus size={iconSize} />, label: useKanji ? '15. フリーページ5' : '15. ふりーぺーじ5' },
   ];
 
   return (
-    <aside className="sidebar">
-      <NavLink to="/" style={{ textDecoration: 'none' }}>
-        <div className="flex items-center gap-2 mb-6 px-2" style={{ cursor: 'pointer' }}>
-          <BookOpen size={28} color="var(--primary)" />
-          <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-main)' }}>
-            {useKanji ? 'しおりメーカー' : 'しおりめーかー'}
-          </h2>
-        </div>
-      </NavLink>
+    <>
+      {/* モバイル用バックドロップ */}
+      {isOpen && <div className="sidebar-backdrop" onClick={onClose} />}
 
-      <nav className="flex-col gap-2 flex" style={{ flex: 1 }}>
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            ref={location.pathname === item.to ? activeRef : null}
-          >
-            {item.icon}
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
-
-      <div className="mt-8 pt-4 border-t" style={{ borderTop: '1px solid var(--border)' }}>
-        <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '0.5rem' }}>
-          <SettingsIcon size={20} />
-          {useKanji ? '設定' : 'せってい'}
-        </NavLink>
-        <NavLink to="/preview" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '0.5rem', background: 'var(--primary-light)', color: 'var(--primary)' }}>
-          <Printer size={20} />
-          {useKanji ? '完成プレビュー' : 'かんせいぷれびゅー'}
-        </NavLink>
-        <NavLink to="/print" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ marginBottom: '0.5rem', background: 'rgba(45,96,80,0.35)', color: '#81C784' }}>
-          <Printer size={20} />
-          {useKanji ? '印刷' : 'いんさつ'}
-        </NavLink>
-        <button onClick={handleReset} className="btn btn-danger" style={{ width: '100%' }}>
-          <Trash2 size={18} />
-          {useKanji ? 'データリセット' : 'でーたりせっと'}
+      <aside className={`sidebar${isOpen ? ' sidebar-open' : ''}`}>
+        {/* モバイル用閉じるボタン */}
+        <button className="sidebar-close-btn btn-icon" onClick={onClose} aria-label="メニューを閉じる">
+          <X size={20} />
         </button>
-      </div>
-    </aside>
+
+        <NavLink to="/" onClick={onClose} style={{ textDecoration: 'none' }}>
+          <div className="sidebar-brand">
+            <BookOpen size={24} color="var(--primary)" />
+            <h2 className="sidebar-title">
+              {useKanji ? 'しおりメーカー' : 'しおりめーかー'}
+            </h2>
+          </div>
+        </NavLink>
+
+        <nav className="sidebar-nav">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={onClose}
+              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              ref={location.pathname === item.to ? activeRef : null}
+            >
+              {item.icon}
+              <span className="nav-label">{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <NavLink
+            to="/settings"
+            onClick={onClose}
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+          >
+            <SettingsIcon size={iconSize} />
+            <span className="nav-label">{useKanji ? '設定' : 'せってい'}</span>
+          </NavLink>
+          <NavLink
+            to="/preview"
+            onClick={onClose}
+            className={({ isActive }) => `nav-link nav-preview${isActive ? ' active' : ''}`}
+          >
+            <Printer size={iconSize} />
+            <span className="nav-label">{useKanji ? '完成プレビュー' : 'かんせいぷれびゅー'}</span>
+          </NavLink>
+          <NavLink
+            to="/print"
+            onClick={onClose}
+            className={({ isActive }) => `nav-link nav-print${isActive ? ' active' : ''}`}
+          >
+            <Printer size={iconSize} />
+            <span className="nav-label">{useKanji ? '印刷' : 'いんさつ'}</span>
+          </NavLink>
+          <button onClick={handleReset} className="btn btn-danger" style={{ width: '100%', marginTop: '0.25rem' }}>
+            <Trash2 size={16} />
+            <span className="nav-label">{useKanji ? 'データリセット' : 'でーたりせっと'}</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 
+/* ── ページナビゲーション ────────────────────────── */
 const PAGE_ROUTES = [
-  "/", "/destination", "/goals", "/belongings", "/schedule",
-  "/seats", "/room", "/memo", "/pocket-money", "/roles",
-  "/custom/11", "/custom/12", "/custom/13", "/custom/14", "/custom/15",
+  '/', '/destination', '/goals', '/belongings', '/schedule',
+  '/seats', '/room', '/memo', '/pocket-money', '/roles',
+  '/custom/11', '/custom/12', '/custom/13', '/custom/14', '/custom/15',
 ];
 
 function PageNav() {
@@ -122,33 +190,38 @@ function PageNav() {
   if (currentIndex === -1) return null;
 
   const prev = currentIndex > 0 ? PAGE_ROUTES[currentIndex - 1] : null;
-  const next = currentIndex < PAGE_ROUTES.length - 1 ? PAGE_ROUTES[currentIndex + 1] : "/preview";
+  const next = currentIndex < PAGE_ROUTES.length - 1 ? PAGE_ROUTES[currentIndex + 1] : '/preview';
 
   return (
     <div className="page-nav flex justify-between mt-8 pt-4" style={{ borderTop: '1px dashed var(--border)' }}>
       {prev ? (
         <button className="btn btn-secondary" onClick={() => navigate(prev)}>
-          <ChevronLeft size={18} /> {useKanji ? '前のページ' : 'まえの ぺーじ'}
+          <ChevronLeft size={18} />
+          <span>{useKanji ? '前のページ' : 'まえの ぺーじ'}</span>
         </button>
       ) : <span />}
       <button className="btn btn-primary" onClick={() => navigate(next)}>
-        {next === "/preview"
-          ? (useKanji ? 'プレビューへ' : 'ぷれびゅーへ')
-          : (useKanji ? '次のページ' : 'つぎの ぺーじ')}
+        <span>
+          {next === '/preview'
+            ? (useKanji ? 'プレビューへ' : 'ぷれびゅーへ')
+            : (useKanji ? '次のページ' : 'つぎの ぺーじ')}
+        </span>
         <ChevronRight size={18} />
       </button>
     </div>
   );
 }
 
+/* ── App ────────────────────────────────────────── */
 function App() {
   const { data, bgmUrl } = useShiori();
   const audioRef = useRef(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (audioRef.current) {
       if (data.settings.bgmEnabled && bgmUrl) {
-        audioRef.current.play().catch(e => console.log('BGM playback failed:', e));
+        audioRef.current.play().catch(() => {});
       } else {
         audioRef.current.pause();
       }
@@ -156,33 +229,43 @@ function App() {
   }, [data.settings.bgmEnabled, bgmUrl]);
 
   return (
-    <div className="app-container">
-      <Sidebar />
-      <main className="main-content">
-        <div className="glass-panel">
-          <Routes>
-            <Route path="/" element={<Page1DateTime />} />
-            <Route path="/destination" element={<Page2Destination />} />
-            <Route path="/goals" element={<Page3Goals />} />
-            <Route path="/belongings" element={<Page4Belongings />} />
-            <Route path="/schedule" element={<Page5Schedule />} />
-            <Route path="/seats" element={<Page6Seats />} />
-            <Route path="/room" element={<Page7Room />} />
-            <Route path="/memo" element={<Page8Memo />} />
-            <Route path="/pocket-money" element={<Page9PocketMoney />} />
-            <Route path="/roles" element={<Page10Roles />} />
-            <Route path="/custom/:id" element={<PageCustom />} />
-            <Route path="/preview" element={<Preview />} />
-            <Route path="/print" element={<Print />} />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
-          <PageNav />
-        </div>
-      </main>
-      {bgmUrl && (
-        <audio ref={audioRef} src={bgmUrl} loop />
-      )}
-    </div>
+    <>
+      <OrientationGuard />
+      <div className="app-container">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <main className="main-content">
+          {/* ハンバーガーボタン（モバイルのみ表示） */}
+          <button
+            className="hamburger-btn"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="メニューを開く"
+          >
+            <Menu size={22} />
+          </button>
+
+          <div className="glass-panel">
+            <Routes>
+              <Route path="/" element={<Page1DateTime />} />
+              <Route path="/destination" element={<Page2Destination />} />
+              <Route path="/goals" element={<Page3Goals />} />
+              <Route path="/belongings" element={<Page4Belongings />} />
+              <Route path="/schedule" element={<Page5Schedule />} />
+              <Route path="/seats" element={<Page6Seats />} />
+              <Route path="/room" element={<Page7Room />} />
+              <Route path="/memo" element={<Page8Memo />} />
+              <Route path="/pocket-money" element={<Page9PocketMoney />} />
+              <Route path="/roles" element={<Page10Roles />} />
+              <Route path="/custom/:id" element={<PageCustom />} />
+              <Route path="/preview" element={<Preview />} />
+              <Route path="/print" element={<Print />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+            <PageNav />
+          </div>
+        </main>
+      </div>
+      {bgmUrl && <audio ref={audioRef} src={bgmUrl} loop />}
+    </>
   );
 }
 

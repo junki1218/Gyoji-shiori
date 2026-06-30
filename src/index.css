@@ -379,3 +379,265 @@ button:focus-visible {
     display: none;
   }
 }
+
+/* ================================================================
+   Sidebar structural classes (used by new responsive Sidebar)
+   ================================================================ */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  padding: 0 0.25rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sidebar-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-preview {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.nav-print {
+  background: rgba(45, 96, 80, 0.35);
+  color: #81C784;
+}
+
+/* Close button – hidden on desktop */
+.sidebar-close-btn {
+  display: none;
+  align-self: flex-end;
+  margin-bottom: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Backdrop – hidden on desktop */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+
+/* Hamburger – hidden on desktop */
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-main);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+/* ================================================================
+   Orientation Guard Overlay
+   ================================================================ */
+.orient-guard {
+  position: fixed;
+  inset: 0;
+  background: #1a3c34;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  padding: 2rem;
+}
+.orient-icon {
+  color: var(--primary);
+  animation: rotateHint 2.2s ease-in-out infinite;
+}
+@keyframes rotateHint {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-90deg) scale(1.08); }
+  50%  { transform: rotate(-90deg) scale(1); }
+  75%  { transform: rotate(0deg) scale(1.04); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+.orient-title {
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+.orient-sub {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* ================================================================
+   Responsive Breakpoints
+   ================================================================ */
+
+/* ── タブレット横向き（iPad など） 768px〜1023px ── */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .sidebar {
+    width: 210px;
+  }
+  .main-content {
+    margin-left: 210px;
+    padding: 1.5rem;
+  }
+  .glass-panel {
+    padding: 1.75rem;
+  }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.35rem; }
+}
+
+/* ── スマートフォン横向き（〜767px） ── */
+@media (max-width: 767px) {
+  /* サイドバーをオーバーレイに変更 */
+  .sidebar {
+    width: 270px;
+    transform: translateX(-100%);
+    transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.26s ease;
+    z-index: 100;
+    box-shadow: none;
+  }
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.6);
+  }
+  .sidebar-backdrop {
+    display: block;
+  }
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  /* メインコンテンツはフル幅 */
+  .main-content {
+    margin-left: 0;
+    padding: 0.75rem;
+  }
+  .glass-panel {
+    padding: 1rem;
+    border-width: 3px;
+  }
+  .glass-panel::after {
+    border-width: 5px;
+    top: -5px; left: -5px; right: -5px; bottom: -5px;
+  }
+
+  /* ハンバーガーを表示 */
+  .hamburger-btn {
+    display: flex;
+  }
+
+  /* フォント縮小 */
+  h1 { font-size: 1.45rem; }
+  h2 { font-size: 1.1rem; }
+
+  /* ページヘッダーの余白を縮小 */
+  .page-header {
+    margin-bottom: 1.25rem;
+  }
+
+  /* カードのパディング縮小 */
+  .card {
+    padding: 1rem;
+  }
+
+  /* グリッドを強制1カラム */
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* ギャップ縮小 */
+  .gap-6 { gap: 0.75rem; }
+  .gap-8 { gap: 1rem; }
+  .mb-8  { margin-bottom: 1rem; }
+  .mt-8  { margin-top: 1rem; }
+
+  /* ボタンの文字サイズ */
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.88rem;
+  }
+
+  /* ページナビを縮小 */
+  .page-nav .btn {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  /* 入力フォント縮小 */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    font-size: 0.92rem;
+    padding: 0.6rem 0.75rem;
+  }
+}
+
+/* ── 極小スクリーン（折りたたみ機種など 〜479px） ── */
+@media (max-width: 479px) {
+  .sidebar { width: 240px; }
+  .glass-panel { padding: 0.75rem; }
+  h1 { font-size: 1.25rem; }
+}
+
+/* ── 安全領域（iPhone ノッチ・ホームバー対応） ── */
+@supports (padding: max(0px)) {
+  .main-content {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+  .sidebar {
+    padding-top: max(1.5rem, env(safe-area-inset-top));
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+}
