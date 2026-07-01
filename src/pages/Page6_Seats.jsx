@@ -1,5 +1,6 @@
 import React from 'react';
 import { useShiori } from '../context/ShioriContext';
+import { Bus, TrainFront, SquareUser } from 'lucide-react';
 import { t } from '../utils/i18n';
 
 export default function Page6Seats() {
@@ -64,30 +65,39 @@ export default function Page6Seats() {
           </div>
         </div>
 
-        <div className="mt-8 overflow-auto" style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
-          <div style={{ display: 'inline-block', minWidth: '100%' }}>
-            {seats.transportType === 'bus' && (
-              <div className="text-center mb-4 text-muted font-bold">{t(useKanji, '運転席 / 前方', 'うんてんせき / ぜんぽう')}</div>
-            )}
+        <div className="mt-8 overflow-auto" style={{ padding: '1.5rem 1rem', background: 'rgba(0,0,0,0.15)', borderRadius: '8px' }}>
+          <div className={`vehicle-body vehicle-${seats.transportType}`} style={{ display: 'inline-block', minWidth: '100%' }}>
+            <div className="vehicle-front">
+              {seats.transportType === 'bus' ? <Bus size={22} /> : <TrainFront size={22} />}
+              <span>
+                {seats.transportType === 'bus'
+                  ? t(useKanji, '運転席 / 前方', 'うんてんせき / ぜんぽう')
+                  : t(useKanji, '進行方向', 'すすむ ほうこう')}
+              </span>
+            </div>
             {rows.map(row => (
               <div key={row} className="flex justify-center gap-2 mb-2">
                 {cols.map(col => {
                   const isAisle = seats.cols > 3 && col === Math.floor(seats.cols / 2);
+                  const value = seats.assignments[`${row}-${col}`] || '';
                   return (
                     <React.Fragment key={col}>
                       {isAisle && <div style={{ width: '30px' }}></div>}
-                      <input
-                        type="text"
-                        value={seats.assignments[`${row}-${col}`] || ''}
-                        onChange={(e) => handleSeatChange(row, col, e.target.value)}
-                        placeholder={`${row + 1}-${String.fromCharCode(65 + col)}`}
-                        style={{ width: '80px', textAlign: 'center', padding: '0.5rem' }}
-                      />
+                      <div className={`seat-chip ${value ? 'seat-filled' : ''}`}>
+                        {value && <SquareUser size={14} className="seat-chip-icon" />}
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={(e) => handleSeatChange(row, col, e.target.value)}
+                          placeholder={`${row + 1}-${String.fromCharCode(65 + col)}`}
+                        />
+                      </div>
                     </React.Fragment>
                   );
                 })}
               </div>
             ))}
+            <div className="vehicle-rear" />
           </div>
         </div>
       </div>

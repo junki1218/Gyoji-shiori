@@ -46,24 +46,27 @@ const defaultState = {
   }
 };
 
+function mergeWithDefaults(parsed) {
+  return {
+    ...defaultState,
+    ...parsed,
+    settings: { ...defaultState.settings, ...parsed.settings },
+    pocketMoney: { ...defaultState.pocketMoney, ...parsed.pocketMoney },
+    customPages: parsed.customPages
+      ? defaultState.customPages.map(def => {
+          const saved = parsed.customPages.find(p => p.id === def.id);
+          return saved ? { ...def, ...saved } : def;
+        })
+      : defaultState.customPages,
+  };
+}
+
 export function ShioriProvider({ children }) {
   const [data, setData] = useState(() => {
     try {
       const saved = localStorage.getItem('shioriData');
       if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          ...defaultState,
-          ...parsed,
-          settings: { ...defaultState.settings, ...parsed.settings },
-          pocketMoney: { ...defaultState.pocketMoney, ...parsed.pocketMoney },
-          customPages: parsed.customPages
-            ? defaultState.customPages.map(def => {
-                const saved = parsed.customPages.find(p => p.id === def.id);
-                return saved ? { ...def, ...saved } : def;
-              })
-            : defaultState.customPages,
-        };
+        return mergeWithDefaults(JSON.parse(saved));
       }
     } catch (e) {
       console.error('Failed to load saved data:', e);
@@ -100,8 +103,12 @@ export function ShioriProvider({ children }) {
     }
   };
 
+  const importData = (parsed) => {
+    setData(mergeWithDefaults(parsed));
+  };
+
   return (
-    <ShioriContext.Provider value={{ data, updateSection, updateSettings, resetData, bgmUrl, setBgmUrl }}>
+    <ShioriContext.Provider value={{ data, updateSection, updateSettings, resetData, importData, bgmUrl, setBgmUrl }}>
       {children}
     </ShioriContext.Provider>
   );

@@ -113,6 +113,8 @@ function TTSController() {
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
+    // ページ遷移時に speechSynthesis を強制停止するため、対応するUI状態もここでリセットする
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSpeaking(false);
   }, [location.pathname]);
 

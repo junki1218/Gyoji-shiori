@@ -3,6 +3,7 @@ import { useShiori } from '../context/ShioriContext';
 import { CheckCircle2, Circle, Star, Trash2, Camera } from 'lucide-react';
 import { t } from '../utils/i18n';
 import ImageWithZoom from '../components/ImageWithZoom';
+import { suggestPictogram } from '../utils/pictograms';
 
 export default function Page4Belongings() {
   const { data, updateSection } = useShiori();
@@ -144,7 +145,10 @@ export default function Page4Belongings() {
                 }
               </div>
 
-              <span className="belonging-name">{item.name}</span>
+              <span className="belonging-name">
+                {suggestPictogram(item.name) && <span className="pictogram-badge">{suggestPictogram(item.name)}</span>}
+                {item.name}
+              </span>
 
               {item.image && (
                 <div onClick={e => e.stopPropagation()}>
